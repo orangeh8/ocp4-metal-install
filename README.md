@@ -1,4 +1,4 @@
-# OpenShift 4 Bare Metal Install - User Provisioned Infrastructure (UPI)
+ # OpenShift 4 Bare Metal Install - User Provisioned Infrastructure (UPI)
 
 - [OpenShift 4 Bare Metal Install - User Provisioned Infrastructure (UPI)](#openshift-4-bare-metal-install---user-provisioned-infrastructure-upi)
   - [Architecture Diagram](#architecture-diagram)
