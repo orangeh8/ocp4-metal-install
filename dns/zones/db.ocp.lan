@@ -8,7 +8,7 @@ $TTL    604800 ; 缓存时间（秒）
 )
         IN      NS      ocp-svc
 
-ocp-svc.ocp.lan.          IN      A       192.168.31.100                  ; DNS 服务器地址
+ocp-svc.ocp.lan.          IN      A        192.168.31.168                  ; DNS 服务器地址
 
 ; Temp Bootstrap Node
 ocp-bootstrap.lab.ocp.lan.        IN      A      192.168.31.200
@@ -23,9 +23,9 @@ ocp-w-1.lab.ocp.lan.        IN      A      192.168.31.211
 ocp-w-2.lab.ocp.lan.        IN      A      192.168.31.212
 
 ; OpenShift Internal - Load balancer
-api.lab.ocp.lan.        IN    A    192.168.31.100
-api-int.lab.ocp.lan.    IN    A    192.168.31.100
-*.apps.lab.ocp.lan.     IN    A    192.168.31.100
+api.lab.ocp.lan.        IN    A     192.168.31.168
+api-int.lab.ocp.lan.    IN    A     192.168.31.168
+*.apps.lab.ocp.lan.     IN    A     192.168.31.168
 
 ; ETCD Cluster
 etcd-0.lab.ocp.lan.    IN    A     192.168.31.201
@@ -37,5 +37,5 @@ _etcd-server-ssl._tcp.lab.ocp.lan.    86400     IN    SRV     0    10    2380   
 _etcd-server-ssl._tcp.lab.ocp.lan.    86400     IN    SRV     0    10    2380    etcd-1.lab
 _etcd-server-ssl._tcp.lab.ocp.lan.    86400     IN    SRV     0    10    2380    etcd-2.lab
 
-oauth-openshift.apps.lab.ocp.lan.     IN     A     192.168.31.100
-console-openshift-console.apps.lab.ocp.lan.     IN     A     192.168.31.100
+oauth-openshift.apps.lab.ocp.lan.     IN     A      192.168.31.168
+console-openshift-console.apps.lab.ocp.lan.     IN     A      192.168.31.168
