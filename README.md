@@ -139,7 +139,7 @@
 
 1. OPTIONAL: Create a file '~/.vimrc' and paste the following (this helps with editing in vim, particularly yaml files):
 
-   ```bash
+```bash
    cat <<EOT >> ~/.vimrc
    syntax on
    set nu et ai sts=0 ts=2 sw=2 list hls
