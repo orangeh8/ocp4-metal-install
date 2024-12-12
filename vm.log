@@ -1,0 +1,178 @@
+
+
+ocp-svc
+00:0c:29:2a:36:be		 192.168.31.168
+
+ocp-bootstrap
+192.168.31.252
+
+ip=192.168.31.252::192.168.31.1:255.255.255.0:ocp-bootstrap:ens192:none nameserver=192.168.31.168 coreos.inst.install_dev=/dev/sda coreos.inst.ignition_url=http://192.168.31.168:8080/ocp4/bootstrap.ign coreos.inst.insecure=yes
+
+ocp-cp-1
+192.168.31.100
+
+ip=192.168.31.100::192.168.31.1:255.255.255.0:ocp-cp-1:ens192:none nameserver=192.168.31.168 coreos.inst.install_dev=/dev/sda coreos.inst.ignition_url=http://192.168.31.168:8080/ocp4/master.ign coreos.inst.insecure=yes
+
+
+ocp-cp-2
+192.168.31.89
+
+
+ip=192.168.31.89::192.168.31.1:255.255.255.0:ocp-cp-2:ens192:none nameserver=192.168.31.168 coreos.inst.install_dev=/dev/sda coreos.inst.ignition_url=http://192.168.31.168:8080/ocp4/master.ign coreos.inst.insecure=yes
+
+
+ocp-cp-3
+192.168.31.21
+
+ip=192.168.31.21::192.168.31.1:255.255.255.0:ocp-cp-3:ens192:none nameserver=192.168.31.168 coreos.inst.install_dev=/dev/sda coreos.inst.ignition_url=http://192.168.31.168:8080/ocp4/master.ign coreos.inst.insecure=yes
+
+ocp-w-1
+192.168.31.250
+
+
+ip=192.168.31.250::192.168.31.1:255.255.255.0:ocp-w-1:ens192:none nameserver=192.168.31.168 coreos.inst.install_dev=/dev/sda coreos.inst.ignition_url=http://192.168.31.168:8080/ocp4/worker.ign coreos.inst.insecure=yes
+
+
+ocp-w-2
+192.168.31.221
+
+ip=192.168.31.221::192.168.31.1:255.255.255.0:ocp-w-2:ens192:none nameserver=192.168.31.168 coreos.inst.install_dev=/dev/sda coreos.inst.ignition_url=http://192.168.31.168:8080/ocp4/worker.ign coreos.inst.insecure=yes
+
+
+
+
+ip=dhcp coreos.inst.install_dev=/dev/sda coreos.inst.insecure=yes coreos.inst.ignition_url=http://192.168.22.1:8080/ocp4/bootstrap.ign
+ip=dhcp coreos.inst.install_dev=/dev/sda coreos.inst.insecure=yes coreos.inst.ignition_url=http://192.168.22.1:8080/ocp4/master.ign
+ip=dhcp coreos.inst.install_dev=/dev/sda coreos.inst.insecure=yes coreos.inst.ignition_url=http://192.168.22.1:8080/ocp4/worker.ign
+
+
+# Bootstrap Node - ocp-bootstrap
+ip=dhcp coreos.inst.install_dev=/dev/sda coreos.inst.image_url=http://192.168.22.1:8080/ocp4/rhcos coreos.inst.insecure=yes coreos.inst.ignition_url=http://192.168.22.1:8080/ocp4/bootstrap.ign
+
+# Or if you waited for it boot, use the following command then just reboot after it finishes and make sure you remove the attached .iso
+sudo coreos-installer install /dev/sda -I http://192.168.22.1:8080/ocp4/bootstrap.ign --insecure --insecure-ignition
+
+
+
+
+
+firewall-cmd --zone=external --del-masquerade --permanent
+
+
+nmcli connection modify ens224 connection.zone internal
+nmcli connection modify ens192 connection.zone external
+
+firewall-cmd --zone=external --add-masquerade --permanent
+firewall-cmd --zone=internal --add-masquerade --permanent
+
+
+firewall-cmd --list-all --zone=internal
+firewall-cmd --list-all --zone=external
+
+
+
+假设你是网络配置的的专家，请注意是 centos 9操作系统 ，请注意是 centos 9操作系统，虚拟机双网卡，我通过下面的配置，让ens224共享 ens192访问外网可以吗？
+
+ens192 的IP地址是192.168.31.168
+ens224 的IP地址是 192。168.22.1
+
+nmcli connection modify ens224 connection.zone internal
+nmcli connection modify ens192 connection.zone external
+
+firewall-cmd --zone=external --add-masquerade --permanent
+firewall-cmd --zone=internal --add-masquerade --permanent
+
+
+[root@ocp-svc ~]# cat /proc/sys/net/ipv4/ip_forward
+1
+
+[root@ocp-svc ~]# firewall-cmd --get-active-zones
+external
+  interfaces: ens192
+internal
+  interfaces: ens224
+
+
+
+按照上面的配置，
+curl -4 --interface ens192 -v https://quay.io 可以正常访问
+curl -4 --interface ens224 -v https://quay.io 不能访问
+
+traceroute -i ens192 quay.io
+traceroute -i ens224 quay.io
+
+可能是什么问题导致的？
+
+
+[root@ocp-svc ~]# ip route show
+default via 192.168.31.1 dev ens192 proto dhcp src 192.168.31.168 metric 100
+192.168.22.0/24 dev ens224 proto kernel scope link src 192.168.22.1 metric 101
+192.168.31.0/24 dev ens192 proto kernel scope link src 192.168.31.168 metric 100
+
+
+
+
+
+sudo firewall-cmd --permanent --direct --passthrough ipv4 -A FORWARD -i ens224 -o ens192 -j ACCEPT
+sudo firewall-cmd --permanent --direct --passthrough ipv4 -A FORWARD -i ens192 -o ens224 -m state --state ESTABLISHED,RELATED -j ACCEPT
+
+
+
+
+ firewall-cmd --list-all --zone=internal
+
+internal (active)
+  target: default
+  icmp-block-inversion: no
+  interfaces: ens224
+  sources:
+  services: cockpit dhcp dhcpv6-client http https mdns mountd nfs rpc-bind samba-client ssh
+  ports: 53/udp 53/tcp 8080/tcp 6443/tcp 22623/tcp
+  protocols:
+  forward: yes
+  masquerade: yes
+  forward-ports:
+  source-ports:
+  icmp-blocks:
+  rich rules:
+
+firewall-cmd --list-all --zone=external
+external (active)
+  target: default
+  icmp-block-inversion: no
+  interfaces: ens192
+  sources:
+  services: http https ssh
+  ports: 6443/tcp 9000/tcp
+  protocols:
+  forward: yes
+  masquerade: yes
+  forward-ports:
+  source-ports:
+  icmp-blocks:
+  rich rules:
+
+
+
+
+
+
+
+
+
+# Ensure firewalld is running
+sudo systemctl start firewalld
+sudo systemctl enable firewalld
+
+# Add masquerade rule to public zone
+sudo firewall-cmd --zone=public --add-masquerade --permanent
+
+# Enable IP forwarding
+echo "net.ipv4.ip_forward = 1" | sudo tee -a /etc/sysctl.d/99-sysctl.conf
+sudo sysctl -p
+
+# Reload firewalld
+sudo firewall-cmd --reload
+
+# Verify masquerading is enabled
+sudo firewall-cmd --zone=public --query-masquerade

@@ -1,4 +1,4 @@
- # OpenShift 4 Bare Metal Install - User Provisioned Infrastructure (UPI)
+# OpenShift 4 Bare Metal Install - User Provisioned Infrastructure (UPI)
 
 - [OpenShift 4 Bare Metal Install - User Provisioned Infrastructure (UPI)](#openshift-4-bare-metal-install---user-provisioned-infrastructure-upi)
   - [Architecture Diagram](#architecture-diagram)
@@ -139,7 +139,7 @@
 
 1. OPTIONAL: Create a file '~/.vimrc' and paste the following (this helps with editing in vim, particularly yaml files):
 
-```bash
+   ```bash
    cat <<EOT >> ~/.vimrc
    syntax on
    set nu et ai sts=0 ts=2 sw=2 list hls

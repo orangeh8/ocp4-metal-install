@@ -1,4 +1,4 @@
-$TTL    604800 ; 缓存时间（秒）
+$TTL    604800
 @       IN      SOA     ocp-svc.ocp.lan. contact.ocp.lan (
                   1     ; Serial
              604800     ; Refresh
@@ -8,34 +8,35 @@ $TTL    604800 ; 缓存时间（秒）
 )
         IN      NS      ocp-svc
 
-ocp-svc.ocp.lan.          IN      A        192.168.31.168                  ; DNS 服务器地址
+ocp-svc.ocp.lan.          IN      A       192.168.22.1
 
 ; Temp Bootstrap Node
-ocp-bootstrap.lab.ocp.lan.        IN      A      192.168.31.252
+ocp-bootstrap.lab.ocp.lan.        IN      A      192.168.22.200
 
 ; Control Plane Nodes
-ocp-cp-1.lab.ocp.lan.         IN      A      192.168.31.100
-ocp-cp-2.lab.ocp.lan.         IN      A      192.168.31.89
-ocp-cp-3.lab.ocp.lan.         IN      A      192.168.31.21
+ocp-cp-1.lab.ocp.lan.         IN      A      192.168.22.201
+ocp-cp-2.lab.ocp.lan.         IN      A      192.168.22.202
+ocp-cp-3.lab.ocp.lan.         IN      A      192.168.22.203
 
 ; Worker Nodes
-ocp-w-1.lab.ocp.lan.        IN      A      192.168.31.250
-ocp-w-2.lab.ocp.lan.        IN      A      192.168.31.221
+ocp-w-1.lab.ocp.lan.        IN      A      192.168.22.211
+ocp-w-2.lab.ocp.lan.        IN      A      192.168.22.212
+ocp-w-3.lab.ocp.lan.        IN      A      192.168.22.213
 
 ; OpenShift Internal - Load balancer
-api.lab.ocp.lan.        IN    A     192.168.31.168
-api-int.lab.ocp.lan.    IN    A     192.168.31.168
-*.apps.lab.ocp.lan.     IN    A     192.168.31.168
+api.lab.ocp.lan.        IN    A    192.168.22.1
+api-int.lab.ocp.lan.    IN    A    192.168.22.1
+*.apps.lab.ocp.lan.     IN    A    192.168.22.1
 
 ; ETCD Cluster
-etcd-0.lab.ocp.lan.    IN    A     192.168.31.100
-etcd-1.lab.ocp.lan.    IN    A     192.168.31.89
-etcd-2.lab.ocp.lan.    IN    A     192.168.31.21
+etcd-0.lab.ocp.lan.    IN    A     192.168.22.201
+etcd-1.lab.ocp.lan.    IN    A     192.168.22.202
+etcd-2.lab.ocp.lan.    IN    A     192.168.22.203
 
 ; OpenShift Internal SRV records (cluster name = lab)
 _etcd-server-ssl._tcp.lab.ocp.lan.    86400     IN    SRV     0    10    2380    etcd-0.lab
 _etcd-server-ssl._tcp.lab.ocp.lan.    86400     IN    SRV     0    10    2380    etcd-1.lab
 _etcd-server-ssl._tcp.lab.ocp.lan.    86400     IN    SRV     0    10    2380    etcd-2.lab
 
-oauth-openshift.apps.lab.ocp.lan.     IN     A      192.168.31.168
-console-openshift-console.apps.lab.ocp.lan.     IN     A      192.168.31.168
+oauth-openshift.apps.lab.ocp.lan.     IN     A     192.168.22.1
+console-openshift-console.apps.lab.ocp.lan.     IN     A     192.168.22.1
